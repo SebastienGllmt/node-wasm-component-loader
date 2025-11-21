@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "name": "node-wasm-component-loader",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebastienGllmt/node-wasm-component-loader"
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "publish": "npm run build && npm publish"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "^1.15.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "files": [
+    "README.md",
+    "tsconfig.json",
+    "dist",
+    "src"
+  ],
+  "dependencies": {
+    "@types/node": "^24.10.1"
+  },
+  "keywords": [
+    "node",
+    "wasm",
+    "loader",
+    "extension",
+    "hook"
+  ]
+}

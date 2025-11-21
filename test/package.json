@@ -1,0 +1,23 @@
+{
+    "version": "1.0.0",
+    "name": "node-wasm-component-loader-test",
+    "type": "module",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/SebastienGllmt/node-wasm-component-loader"
+    },
+    "license": "MIT",
+    "scripts": {
+      "dev": "node --import node-wasm-component-loader ./index.ts"
+    },
+    "devDependencies": {
+    "node-wasm-component-loader": "../"
+  },
+    "peerDependencies": {
+      "typescript": "^5"
+    },
+    "dependencies": {
+      "@types/node": "^24.10.1"
+    }
+  }
+  
