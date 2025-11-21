@@ -4,7 +4,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SebastienGllmt/node-wasm-component-loader"
+    "url": "git+https://github.com/SebastienGllmt/node-wasm-component-loader.git"
   },
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

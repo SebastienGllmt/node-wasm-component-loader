@@ -1,6 +1,6 @@
 # `node-wasm-component-loader`
 
-Load WASM components based on nodejs [customization hooks]([experimental](https://nodejs.org/api/module.html#customization-hooks)) (custom loaders)
+Load WASM components based on nodejs [customization hooks](https://nodejs.org/api/module.html#customization-hooks) (custom loaders)
 
 ## Installation
 
