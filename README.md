@@ -25,4 +25,4 @@ node --import node-wasm-component-loader ./index.ts
 ## Release
 
 1. `npm install`
-2. `npm run publish`
+2. `npm publish`

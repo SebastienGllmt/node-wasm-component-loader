@@ -17,7 +17,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "publish": "npm run build && npm publish"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@bytecodealliance/jco": "^1.15.3"
