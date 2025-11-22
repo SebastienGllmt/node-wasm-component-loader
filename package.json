@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "node-wasm-component-loader",
   "type": "module",
   "repository": {
