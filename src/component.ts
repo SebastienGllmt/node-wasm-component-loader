@@ -1,6 +1,6 @@
 import path from "node:path";
 import { join, dirname } from "node:path";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { readFile, writeFile } from 'node:fs/promises';
 import { transpile } from '@bytecodealliance/jco';
 
@@ -43,6 +43,31 @@ function detectWasmKind(bytes: Uint8Array): "module" | "component" | "unknown" {
   return "unknown"; // Future versions or malformed input
 }
 
+async function getFileHash(buffer: Buffer<ArrayBuffer>) {
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return hashHex;
+}
+
+function cleanupOldGenTs() {
+  const genTsDir = "./gen-ts";
+  if (!existsSync(genTsDir)) return;
+  const folders = readdirSync(genTsDir);
+  for (const folder of folders) {
+    // only delete folders that match the pattern that our project creates
+    // in case the user has their own `gen-ts` folder for some reason
+    if (folder.match(/-[a-f0-9]{8}$/)) {
+      rmSync(join(genTsDir, folder));
+    }
+  }
+}
+
+// TODO: don't delete old files
+//       as this loader may be called by different build targets that have different imports
+//       as one build target breaking another could leave to subtle bugs
+// cleanupOldGenTs();
+
 export async function resolve(specifier: string, context: any, nextResolve: any) {
   // 1) Ignore things that aren't WASM files
   if (!specifier.endsWith(".wasm")) {
@@ -55,23 +80,25 @@ export async function resolve(specifier: string, context: any, nextResolve: any)
     return nextResolve(specifier, context);
   }
   // 3) generate the type and bindings
+  const wasmHash = await getFileHash(wasmFileContent);
   const filename = path.parse(specifier).name;
-  mkdirSync(`./gen-ts/${filename}`, { recursive: true });
+  const folderName = `${filename}-${wasmHash.substring(0, 8)}`;
+  mkdirSync(`./gen-ts/${folderName}`, { recursive: true });
   const transpiledResult = await transpile(wasmFileContent, {
     name: filename,
-    outDir: `./gen-ts/${filename}`
+    outDir: `./gen-ts/${folderName}`
   });
   for (const [key, value] of Object.entries(transpiledResult.files)) {
     await writeFile(key, value as Uint8Array);
   }
-  const newPath = `./gen-ts/${filename}/${filename}.js`;
+  const newPath = `./gen-ts/${folderName}/${filename}.js`;
 
   // 4) Register the type mapping with TS
   const projectRoot = findProjectRoot(specifier);
   // Convert from the path where the WASM file exists to the root folder
   const pathToRoot = path.relative(path.dirname(specifier), projectRoot);
   const tsMapping = `
-export * from '${pathToRoot}/gen-ts/${filename}/${filename}.d.ts'
+export * from '${pathToRoot}/gen-ts/${folderName}/${filename}.js'
 `;
   await writeFile(specifier + ".d.ts", tsMapping);
   return nextResolve(newPath, context);
